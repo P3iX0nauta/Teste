@@ -1,64 +1,30 @@
-package edu.ifba.saj.ads.poo.controller;
+package edu.ifba.saj.ads.poo.model;
 
-public class transacaoFinanceira {
-    private int id;
-    private String recorrencia;
-    private String txNomeRegistro;
-    private String data;
-    private String TipoTransacao;
-    private int valor;
-    
-    public int getValor() {
-        return valor;
-    }
-    public void setValor(int valor) {
+import java.time.LocalDate;
+
+public abstract class TransacaoFinanceira {
+    private String descricao;
+    private double valor;
+    private LocalDate data;
+    private boolean efetivada;
+
+    public TransacaoFinanceira(String descricao, double valor, LocalDate data, boolean efetivada) {
+        this.descricao = descricao;
         this.valor = valor;
-    }
-    public transacaoFinanceira(int valor) {
-        this.valor = valor;
-    }
-    public transacaoFinanceira(int id) {
-        this.id = id;
-    }
-    public int getId() {
-        return id;
-    }
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public transacaoFinanceira(String tipoTransacao) {
-        TipoTransacao = tipoTransacao;
-    }
-    public String getTipoTransacao() {
-        return TipoTransacao;
-    }
-    public void setTipoTransacao(String tipoTransacao) {
-        TipoTransacao = tipoTransacao;
-    }
-    public transacaoFinanceira(String recorrencia, String txNomeRegistro, String data) {
-        this.recorrencia = recorrencia;
-        this.txNomeRegistro = txNomeRegistro;
         this.data = data;
-    }
-    public String getRecorrencia() {
-        return recorrencia;
-    }
-    public void setRecorrencia(String recorrencia) {
-        this.recorrencia = recorrencia;
-    }
-    public String getTxNomeRegistro() {
-        return txNomeRegistro;
-    }
-    public void setTxNomeRegistro(String txNomeRegistro) {
-        this.txNomeRegistro = txNomeRegistro;
-    }
-    public String getData() {
-        return data;
-    }
-    public void setData(String data) {
-        this.data = data;
+        this.efetivada = efetivada;
     }
 
+    // Getters e Setters
+    // Implemente-os, se necessário
 
+    @Override
+    public String toString() {
+        return "TransacaoFinanceira{" +
+                "descricao='" + descricao + '\'' +
+                ", valor=" + valor +
+                ", data=" + data +
+                ", efetivada=" + efetivada +
+                '}';
+    }
 }

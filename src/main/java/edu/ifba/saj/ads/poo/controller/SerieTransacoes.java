@@ -1,24 +1,48 @@
-package edu.ifba.saj.ads.poo.controller;
+package edu.ifba.saj.ads.poo.model;
 
-public class SerieTransacoes ... {
+import java.util.ArrayList;
+import java.util.List;
 
+public class SerieTransacoes {
+    private String descricao;
+    private TransacaoFinanceira transacaoBase;
+    private int recorrencia;
+    private List<TransacaoFinanceira> transacoes;
 
-    // Independete de qual TransacaoFinanceira (Despesa ou Receita) a SerieTransacoes cria todas as TransacaoFinanceira da Serie.
-    private void gerarTransacoes(TransacaoFinanceira transacaoInicial) {
+    public SerieTransacoes(String descricao, TransacaoFinanceira transacaoBase, int recorrencia) {
+        this.descricao = descricao;
+        this.transacaoBase = transacaoBase;
+        this.recorrencia = recorrencia;
+        this.transacoes = new ArrayList<>();
+        gerarTransacoes();
+    }
 
-        String novoNome = getNome() + " " + (getQuantidadeTransacoes() + 1) + "/"+getTotalTransacoes();
-        transacaoInicial.setDescricao(novoNome);
-        transacoes.add(transacaoInicial);
-        transacaoInicial.setSerieTransacoes(this);
-        TransacaoFinanceira transacaoReferencia = transacaoInicial;
-        while (getQuantidadeTransacoes() < getTotalTransacoes()) {
-            LocalDate novaData = transacaoReferencia.getData().plusMonths(1);
-            novoNome = getNome() + " " + (getQuantidadeTransacoes() + 1) + "/"+getTotalTransacoes();
-            transacaoReferencia = transacaoReferencia.copia();
-            transacaoReferencia.setData(novaData);
-            transacaoReferencia.setDescricao(novoNome);
-            transacoes.add(transacaoReferencia);
+    private void gerarTransacoes() {
+        transacoes.clear();
+        for (int i = 0; i < recorrencia; i++) {
+            TransacaoFinanceira transacao = criarTransacaoBase();
+            transacoes.add(transacao);
         }
     }
 
+    private TransacaoFinanceira criarTransacaoBase() {
+        return new TransacaoFinanceira(transacaoBase.getDescricao(), transacaoBase.getValor(), transacaoBase.getData(), transacaoBase.isEfetivada()) {
+        };
+    }
+
+    public List<TransacaoFinanceira> getTransacoes() {
+        return transacoes;
+    }
+
+    // Getters e Setters
+    // Implemente-os, se necessário
+
+    @Override
+    public String toString() {
+        return "SerieTransacoes{" +
+                "descricao='" + descricao + '\'' +
+                ", transacaoBase=" + transacaoBase +
+                ", recorrencia=" + recorrencia +
+                '}';
+    }
 }

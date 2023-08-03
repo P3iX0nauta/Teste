@@ -1,57 +1,72 @@
-package edu.ifba.saj.ads.poo.controller;
+package edu.ifba.saj.ads.poo.model;
 
-public class Conta{
-    private String nome;
-    private int saldo;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
+public class Conta {
+    private static String nome;
+    private static double saldo;
+    private static List<TransacaoFinanceira> transacoes;
 
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setSaldo(int saldo) {
-        this.saldo = saldo;
-    }
-
-    public Conta(String nome, int saldo) {
-        this.nome = nome;
-        this.saldo = saldo;
-    }
-
-    public String getNome() {
+    public static String getNome() {
         return nome;
     }
 
-    public int getSaldo() {
+    public static void setNome(String nome) {
+        Conta.nome = nome;
+    }
+
+    public static double getSaldo() {
         return saldo;
     }
 
+    public static List<TransacaoFinanceira> getTransacoes() {
+        return transacoes;
+    }
 
-    public static void inserirTransacao(transacaoFinanceira transacaoFinanceira)  {
-        transacoes.add(transacaoFinanceira);
-        if (transacaoFinanceira.isEfetivada()) {
-            efetivarTransacao(transacaoFinanceira);
+    public static void inserirTransacao(TransacaoFinanceira transacao) {
+        if (transacoes == null) {
+            transacoes = new ArrayList<>();
+        }
+        transacoes.add(transacao);
+        if (transacao instanceof Receita) {
+            saldo += transacao.getValor();
+        } else if (transacao instanceof Despesa) {
+            saldo -= transacao.getValor();
         }
     }
 
-    public static void removerTransacao(transacaoFinanceira transacaoFinanceira)  {
-        transacoes.remove(transacaoFinanceira);
-        if (transacaoFinanceira.isEfetivada()) {
-            desefetivarTransacao(transacaoFinanceira);
+    public static void removerTransacao(TransacaoFinanceira transacao) {
+        if (transacoes != null && transacoes.contains(transacao)) {
+            transacoes.remove(transacao);
+            if (transacao instanceof Receita) {
+                saldo -= transacao.getValor();
+            } else if (transacao instanceof Despesa) {
+                saldo += transacao.getValor();
+            }
         }
     }
 
-    //transacaoFinanceira.getValorAplicadoNaConta();
-    
+    public static List<TransacaoFinanceira> listaTransacao() {
+        return transacoes;
+    }
 
+    public static void alternarEfetivada(TransacaoFinanceira transacao) {
+        transacao.setEfetivada(!transacao.isEfetivada());
+    }
 
- public static double calcularSaldoPrevisto(LocalDate dataReferencia) {
-    double diferencaSaldo = transacoes.stream()
-            .filter(despesaf -> !despesaf.isEfetivada() && despesaf.getData().isBefore(dataReferencia))
-            .mapToDouble(transacaoFinanceira::getValorAplicadoNaConta)
-            .sum();
-
-    return getSaldo() + diferencaSaldo;
- }
-
+    public static double calcularSaldoPrevisto(LocalDate dataPrevisao) {
+        double saldoPrevisto = saldo;
+        for (TransacaoFinanceira transacao : transacoes) {
+            if (!transacao.isEfetivada() && transacao.getData().isBefore(dataPrevisao)) {
+                if (transacao instanceof Receita) {
+                    saldoPrevisto += transacao.getValor();
+                } else if (transacao instanceof Despesa) {
+                    saldoPrevisto -= transacao.getValor();
+                }
+            }
+        }
+        return saldoPrevisto;
+    }
 }

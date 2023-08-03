@@ -1,42 +1,9 @@
-package edu.ifba.saj.ads.poo.controller;
+package edu.ifba.saj.ads.poo.model;
 
-public class Despesa {
-    private String id;
-    public Despesa(String id) {
-        this.id = id;
-    }
-    public String getId() {
-        return id;
-    }
-    public void setId(String id) {
-        this.id = id;
-    }
-    private String nome;
-    private int valor;
-    private int data;
+import java.time.LocalDate;
 
-    public Despesa(String nome, int valor, int data) {
-        this.nome = nome;
-        this.valor = valor;
-        this.data = data;
+public class Despesa extends TransacaoFinanceira {
+    public Despesa(String descricao, double valor, LocalDate data, boolean efetivada) {
+        super(descricao, valor, data, efetivada);
     }
-    public String getNome() {
-        return nome;
-    }
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-    public int getValor() {
-        return valor;
-    }
-    public void setValor(int valor) {
-        this.valor = valor;
-    }
-    public int getData() {
-        return data;
-    }
-    public void setData(int data) {
-        this.data = data;
-    }
-    
 }
