@@ -1,103 +1,186 @@
-20221TADSSAJ0003
+**Proxy**
 
+**Intenção**
+Fornecer um substituto ou marcador para outro objeto a fim de controlar o acesso a ele.
 
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-24ddc0f5d75046c5622901739e7c5dd533143b0c8e959d652212380cedb1ea36.svg)](https://classroom.github.com/a/mthoTxu2)
-# Descrição da Atividade - Sistema de Gestão de Finanças Pessoais
+**Também conhecido como**
+Surrogate
 
-## Objetivos
+**Motivação**
+Imagine que um sistema de armazenamento em nuvem precisa fornecer acesso a arquivos grandes. Se cada solicitação acessasse diretamente os arquivos na nuvem, poderia haver um alto custo em desempenho e tempo de resposta. Para otimizar esse acesso, podemos usar o padrão Proxy para carregar os arquivos sob demanda e armazená-los temporariamente.
 
-O objetivo desta atividade é desenvolver uma aplicação para a gestão simplificada de finanças pessoais, enfatizando a programação orientada a objetos. O sistema permitirá ao usuário o registro de *transações financeiras* em uma única conta controlada pela aplicação, abrangendo despesas e receitas recorrentes. Para facilitar o gerenciamento e exclusão de registros, as recorrências serão organizadas em séries de transações.
+Sem o Proxy, cada vez que um cliente solicita um arquivo, a operação pode ser cara e demorada. O Proxy pode intermediar essas solicitações, verificando permissões, armazenando arquivos acessados recentemente e otimizando chamadas.
 
-## Características Principais:
+@startuml
+interface Arquivo {
+    + carregar()
+    + exibir()
+}
 
-1. **Registro de Transações**: Os usuários poderão adicionar transações financeiras, fornecendo informações sobre o tipo (despesa ou receita), o valor e a data da transação. As transações podem ser efetivadas ou não efetivadas, possibilitando ao usuário planejar suas finanças com antecedência.
+class ArquivoReal {
+    + carregar()
+    + exibir()
+}
 
-1. **Transações Recorrentes**: O sistema possibilitará a definição de transações recorrentes que ocorrem mensalmente. Os usuários poderão configurar a recorrência indicando o período de validade das transações recorrentes, expresso em quantidade de meses. Por exemplo, ao criar uma despesa de aluguel com recorrência de 24 vezes, o sistema gerará registros como "aluguel 1/24", "aluguel 2/24", até o "aluguel 24/24", acrescentando um mês à data da transação em cada registro subsequente. As recorrências serão agrupadas em uma série, e caso o usuário opte por apagar um registro de uma série, o sistema oferecerá a opção de apagar toda a série.
+class ProxyArquivo {
+    - ArquivoReal arquivoReal
+    + carregar()
+    + exibir()
+}
 
-    ```java
-    import java.time.LocalDate;
+ProxyArquivo ..|> Arquivo
+ArquivoReal ..|> Arquivo
+ProxyArquivo --> ArquivoReal
+@enduml
 
-    public class SerieTransacoes ... {
+**Solução com Proxy:**
+O padrão Proxy resolve o problema ao intermediar o acesso ao objeto real, permitindo controle sobre sua criação, acesso e manipulação. Assim:
 
-        // Independete de qual TransacaoFinanceira (Despesa ou Receita) a SerieTransacoes cria todas as TransacaoFinanceira da Serie.
-        private void gerarTransacoes(TransacaoFinanceira transacaoInicial) {
-            String novoNome = getNome() + " " + (getQuantidadeTransacoes() + 1) + "/"+getTotalTransacoes();
-            transacaoInicial.setDescricao(novoNome);
-            transacoes.add(transacaoInicial);
-            transacaoInicial.setSerieTransacoes(this);
-            TransacaoFinanceira transacaoReferencia = transacaoInicial;
-            while (getQuantidadeTransacoes() < getTotalTransacoes()) {
-                LocalDate novaData = transacaoReferencia.getData().plusMonths(1);
-                novoNome = getNome() + " " + (getQuantidadeTransacoes() + 1) + "/"+getTotalTransacoes();
-                transacaoReferencia = transacaoReferencia.copia();
-                transacaoReferencia.setData(novaData);
-                transacaoReferencia.setDescricao(novoNome);
-                transacoes.add(transacaoReferencia);
-            }
-        }
+- Podemos adiar a criação do objeto real até que seja realmente necessário.
+- Podemos adicionar um cache ou verificação de permissões antes de permitir o acesso ao objeto real.
+- Podemos limitar o acesso ao objeto real baseado em regras de negócio.
 
-    ```
+@startuml
+interface Arquivo {
+    + carregar()
+    + exibir()
+}
 
-1. **Organização em Séries de Transações**: As transações recorrentes serão agrupadas em séries, facilitando a manipulação de registros relacionados. Se uma transação fizer parte de uma série e for excluída, o usuário será questionado sobre a ação a ser tomada: excluir apenas a transação selecionada, todas as transações da série ou a transação selecionada e todas as seguintes.
+class ArquivoReal {
+    + carregar()
+    + exibir()
+}
 
-1. **Cálculo do Saldo da Conta**: O sistema manterá o saldo atualizado com base nas transações efetivadas, refletindo os valores de despesas e receitas na conta do usuário. Quando uma transação é efetivada, o valor será refletido no saldo disponível. Se uma transação efetivada for excluída, o saldo da conta será recalculado. Quanto uma transação financeira é inserida ja efetivada o valor do saldo deve ser alterado de imediato.
+class ProxyArquivo {
+    - ArquivoReal arquivoReal
+    + carregar()
+    + exibir()
+}
 
-    ```java
-    class Conta{
+ProxyArquivo ..|> Arquivo
+ArquivoReal ..|> Arquivo
+ProxyArquivo --> ArquivoReal
+@enduml
 
-        //Ao inserir transação ja efetivada o valor de getValorAplicadoNaConta deve refletir no saldo
-        public static void inserirTransacao(TransacaoFinanceira transacaoFinanceira)  {
-            transacoes.add(transacaoFinanceira);
-            if (transacaoFinanceira.isEfetivada()) {
-                efetivarTransacao(transacaoFinanceira);
-            }
-        }
+**Use o padrão Proxy quando:**
 
-        public static void removerTransacao(TransacaoFinanceira transacaoFinanceira)  {
-            transacoes.remove(transacaoFinanceira);
-            if (transacaoFinanceira.isEfetivada()) {
-                desefetivarTransacao(transacaoFinanceira);
-            }
-        }
-        //...
-        //...efetivarTransacao... utiliza polimorfismo para saber qual valor aplicar no saldo.
-        saldo ... transacaoFinanceira.getValorAplicadoNaConta();
-        //...
-    }
+- Desejar controlar o acesso a um objeto real, por exemplo, restringindo, monitorando ou adiando sua inicialização.
+- Precisar adicionar funcionalidades como logging, caching ou autenticação antes de permitir a interação com o objeto real.
+- O acesso ao objeto real for muito dispendioso em termos de recursos e desempenho.
 
-    ```
+**Estrutura**
+image
 
-1. **Efetivar e Desefetivar Transações**: Deve ser possível Efetivar e Desefetivar transações em qualquer momento, e essa ação deve ser refletida no saldo da conta.
+**Participantes:**
+- **Subject (Arquivo)**: Define a interface comum para RealSubject e Proxy.
+- **RealSubject (ArquivoReal)**: Implementa o comportamento real.
+- **Proxy (ProxyArquivo)**: Controla o acesso a RealSubject, podendo armazenar referências e gerenciar chamadas.
 
-1. **Previsão de Saldo**: Os usuários poderão calcular uma previsão do saldo para uma data específica. O sistema levará em consideração todas as transações registradas, mesmo as não efetivadas, até a data informada, para fornecer uma estimativa do saldo da conta na data desejada.
+**Colaborações:**
+- O Proxy gerencia o acesso ao RealSubject, podendo delegar chamadas ou adicionar funcionalidade extra.
 
-    ```java
-    class Conta{
-        //...
-        // O método calcularSaldoPrevisto está filtrando
-        // apenas as despesas não efetivadas e cuja data é anterior à data de
-        // referência, e então calculando a diferença do saldo atual para o saldo
-        // previsto na data passada por parâmetro
-        public static double calcularSaldoPrevisto(LocalDate dataReferencia) {
-            double diferencaSaldo = transacoes.stream()
-                    .filter(despesaf -> !despesaf.isEfetivada() && despesaf.getData().isBefore(dataReferencia))
-                    .mapToDouble(TransacaoFinanceira::getValorAplicadoNaConta)
-                    .sum();
+**Consequências:**
+- **Controle sobre a criação do objeto:** O objeto real só é instanciado quando necessário.
+- **Melhoria no desempenho:** Pode reduzir chamadas a recursos dispendiosos (ex: carregamento de arquivos remotos).
+- **Segurança e acesso controlado:** Pode restringir acesso com autenticação e permissões.
 
-            return getSaldo() + diferencaSaldo;
-        }
-    }
-    ```
+**Implementação:**
 
-1. **Identificador Único**: Todas as entidades terão um mecanismo para criar valores únicos de identificação, que serão utilizados para comparação entre instâncias. 
+- **Proxy Virtual:** Utilizado para adiar a criação do objeto real.
+- **Proxy Remoto:** Representa um objeto em outra localização, como um serviço remoto.
+- **Proxy de Proteção:** Controla acesso baseado em permissões.
+- **Proxy Cache:** Armazena dados para evitar recomputações desnecessárias.
 
+**Exemplo:**
 
-Esse projeto ja possui o Maven Wrapper. Para executar basta rodar no terminal do VSCode o seguinte comando:
+Classe **Arquivo** - Subject:
+```java
+package proxy;
 
-```shell
-./mvnw
+public interface Arquivo {
+    void carregar();
+    void exibir();
+}
 ```
 
-Exemplo de uso do app:
+Classe **ArquivoReal** - RealSubject:
+```java
+package proxy;
 
-![](Animação.gif)
+public class ArquivoReal implements Arquivo {
+    private String nome;
+
+    public ArquivoReal(String nome) {
+        this.nome = nome;
+        carregar();
+    }
+
+    @Override
+    public void carregar() {
+        System.out.println("Carregando arquivo: " + nome);
+    }
+
+    @Override
+    public void exibir() {
+        System.out.println("Exibindo arquivo: " + nome);
+    }
+}
+```
+
+Classe **ProxyArquivo** - Proxy:
+```java
+package proxy;
+
+public class ProxyArquivo implements Arquivo {
+    private ArquivoReal arquivoReal;
+    private String nome;
+
+    public ProxyArquivo(String nome) {
+        this.nome = nome;
+    }
+
+    @Override
+    public void carregar() {
+        if (arquivoReal == null) {
+            arquivoReal = new ArquivoReal(nome);
+        }
+    }
+
+    @Override
+    public void exibir() {
+        carregar();
+        arquivoReal.exibir();
+    }
+}
+```
+
+Classe **Main** - Cliente:
+```java
+package proxy;
+
+public class Main {
+    public static void main(String[] args) {
+        Arquivo arquivo = new ProxyArquivo("documento.pdf");
+        arquivo.exibir(); // Carrega e exibe
+        System.out.println("---");
+        arquivo.exibir(); // Apenas exibe, sem carregar novamente
+    }
+}
+```
+
+**Conclusão**
+O padrão Proxy é útil para controlar o acesso a objetos reais, permitindo otimizações como carregamento sob demanda, caching, autenticação e restrição de acesso. No exemplo apresentado, o Proxy adia a criação de um arquivo até que ele seja realmente necessário, evitando desperdício de recursos.
+
+**Usos conhecidos:**
+🔹 **Serviços remotos:** Representa objetos remotos em aplicações distribuídas.
+🔹 **Autenticação e segurança:** Restringe acesso a objetos sensíveis.
+🔹 **Cache de imagens e arquivos:** Evita carregamento repetitivo de recursos.
+🔹 **Controle de acesso a sistemas complexos:** Garante que apenas usuários autorizados interajam com determinados objetos.
+
+**Padrões relacionados:**
+- **Decorator:** Embora similar ao Proxy, o Decorator adiciona funcionalidades sem restringir acesso.
+- **Adapter:** Converte interfaces sem atuar como intermediário.
+
+**Referências**
+GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. 1. ed. Porto Alegre: Bookman, 2000.
+
