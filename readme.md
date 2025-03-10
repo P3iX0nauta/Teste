@@ -16,18 +16,15 @@ interface Arquivo {
     + carregar()
     + exibir()
 }
-
 class ArquivoReal {
     + carregar()
     + exibir()
-}
-
+} 
 class ProxyArquivo {
     - ArquivoReal arquivoReal
     + carregar()
     + exibir()
 }
-
 ProxyArquivo ..|> Arquivo
 ArquivoReal ..|> Arquivo
 ProxyArquivo --> ArquivoReal
