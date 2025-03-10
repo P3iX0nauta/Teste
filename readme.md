@@ -45,7 +45,7 @@ O padrão Proxy resolve o problema ao intermediar o acesso ao objeto real, permi
 - O acesso ao objeto real for muito dispendioso em termos de recursos e desempenho.
 
 ## Estrutura
-padrao/image.png
+![alt text](image.png)
 
 ## Participantes:
 - Subject (Arquivo): Define a interface comum para RealSubject e Proxy.
