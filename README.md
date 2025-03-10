@@ -57,9 +57,9 @@ class ProxyArquivo {
     + exibir()
 }
 
-ProxyArquivo ..|> Arquivo
 ArquivoReal ..|> Arquivo
-ProxyArquivo --> ArquivoReal
+ProxyArquivo ..|> Arquivo
+ProxyArquivo o-- ArquivoReal
 @enduml
 
 ## Use o padrão Proxy quando:
