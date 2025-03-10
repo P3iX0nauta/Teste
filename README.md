@@ -1,12 +1,12 @@
-**Proxy**
+# Proxy
 
-**Intenção**
-Fornecer um substituto ou marcador para outro objeto a fim de controlar o acesso a ele.
+## Intenção
+Fornecer um substituto ou intermediário para controlar o acesso a um objeto. O Proxy atua como um representante do objeto real, permitindo adicionar lógica adicional antes ou depois das chamadas ao objeto original, como controle de acesso, carregamento sob demanda ou cache.
 
-**Também conhecido como**
+## Também conhecido como
 Surrogate
 
-**Motivação**
+## Motivação
 Imagine que um sistema de armazenamento em nuvem precisa fornecer acesso a arquivos grandes. Se cada solicitação acessasse diretamente os arquivos na nuvem, poderia haver um alto custo em desempenho e tempo de resposta. Para otimizar esse acesso, podemos usar o padrão Proxy para carregar os arquivos sob demanda e armazená-los temporariamente.
 
 Sem o Proxy, cada vez que um cliente solicita um arquivo, a operação pode ser cara e demorada. O Proxy pode intermediar essas solicitações, verificando permissões, armazenando arquivos acessados recentemente e otimizando chamadas.
@@ -33,7 +33,7 @@ ArquivoReal ..|> Arquivo
 ProxyArquivo --> ArquivoReal
 @enduml
 
-**Solução com Proxy:**
+## Solução com Proxy:
 O padrão Proxy resolve o problema ao intermediar o acesso ao objeto real, permitindo controle sobre sua criação, acesso e manipulação. Assim:
 
 - Podemos adiar a criação do objeto real até que seja realmente necessário.
@@ -62,38 +62,38 @@ ArquivoReal ..|> Arquivo
 ProxyArquivo --> ArquivoReal
 @enduml
 
-**Use o padrão Proxy quando:**
+## Use o padrão Proxy quando:
 
 - Desejar controlar o acesso a um objeto real, por exemplo, restringindo, monitorando ou adiando sua inicialização.
 - Precisar adicionar funcionalidades como logging, caching ou autenticação antes de permitir a interação com o objeto real.
 - O acesso ao objeto real for muito dispendioso em termos de recursos e desempenho.
 
-**Estrutura**
+## Estrutura
 image
 
-**Participantes:**
-- **Subject (Arquivo)**: Define a interface comum para RealSubject e Proxy.
-- **RealSubject (ArquivoReal)**: Implementa o comportamento real.
-- **Proxy (ProxyArquivo)**: Controla o acesso a RealSubject, podendo armazenar referências e gerenciar chamadas.
+## Participantes:
+- Subject (Arquivo): Define a interface comum para RealSubject e Proxy.
+- RealSubject (ArquivoReal): Implementa o comportamento real.
+- Proxy (ProxyArquivo): Controla o acesso a RealSubject, podendo armazenar referências e gerenciar chamadas.
 
-**Colaborações:**
+## Colaborações:
 - O Proxy gerencia o acesso ao RealSubject, podendo delegar chamadas ou adicionar funcionalidade extra.
 
-**Consequências:**
-- **Controle sobre a criação do objeto:** O objeto real só é instanciado quando necessário.
-- **Melhoria no desempenho:** Pode reduzir chamadas a recursos dispendiosos (ex: carregamento de arquivos remotos).
-- **Segurança e acesso controlado:** Pode restringir acesso com autenticação e permissões.
+## Consequências:
+- Controle sobre a criação do objeto: O objeto real só é instanciado quando necessário.
+- Melhoria no desempenho: Pode reduzir chamadas a recursos dispendiosos (ex: carregamento de arquivos remotos).
+- Segurança e acesso controlado: Pode restringir acesso com autenticação e permissões.
 
-**Implementação:**
+## Implementação:
 
-- **Proxy Virtual:** Utilizado para adiar a criação do objeto real.
-- **Proxy Remoto:** Representa um objeto em outra localização, como um serviço remoto.
-- **Proxy de Proteção:** Controla acesso baseado em permissões.
-- **Proxy Cache:** Armazena dados para evitar recomputações desnecessárias.
+- Proxy Virtual: Utilizado para adiar a criação do objeto real.
+- Proxy Remoto: Representa um objeto em outra localização, como um serviço remoto.
+- Proxy de Proteção: Controla acesso baseado em permissões.
+- Proxy Cache: Armazena dados para evitar recomputações desnecessárias.
 
-**Exemplo:**
+## Exemplo:
 
-Classe **Arquivo** - Subject:
+Classe Arquivo - Subject:
 ```java
 package proxy;
 
@@ -103,7 +103,7 @@ public interface Arquivo {
 }
 ```
 
-Classe **ArquivoReal** - RealSubject:
+Classe ArquivoReal - RealSubject:
 ```java
 package proxy;
 
@@ -127,7 +127,7 @@ public class ArquivoReal implements Arquivo {
 }
 ```
 
-Classe **ProxyArquivo** - Proxy:
+Classe ProxyArquivo - Proxy:
 ```java
 package proxy;
 
@@ -154,7 +154,7 @@ public class ProxyArquivo implements Arquivo {
 }
 ```
 
-Classe **Main** - Cliente:
+Classe Main - Cliente:
 ```java
 package proxy;
 
@@ -168,19 +168,19 @@ public class Main {
 }
 ```
 
-**Conclusão**
+## Conclusão
 O padrão Proxy é útil para controlar o acesso a objetos reais, permitindo otimizações como carregamento sob demanda, caching, autenticação e restrição de acesso. No exemplo apresentado, o Proxy adia a criação de um arquivo até que ele seja realmente necessário, evitando desperdício de recursos.
 
-**Usos conhecidos:**
-🔹 **Serviços remotos:** Representa objetos remotos em aplicações distribuídas.
-🔹 **Autenticação e segurança:** Restringe acesso a objetos sensíveis.
-🔹 **Cache de imagens e arquivos:** Evita carregamento repetitivo de recursos.
-🔹 **Controle de acesso a sistemas complexos:** Garante que apenas usuários autorizados interajam com determinados objetos.
+## Usos conhecidos:
+Serviços remotos: Representa objetos remotos em aplicações distribuídas.
+Autenticação e segurança: Restringe acesso a objetos sensíveis.
+Cache de imagens e arquivos: Evita carregamento repetitivo de recursos.
+Controle de acesso a sistemas complexos: Garante que apenas usuários autorizados interajam com determinados objetos.
 
-**Padrões relacionados:**
-- **Decorator:** Embora similar ao Proxy, o Decorator adiciona funcionalidades sem restringir acesso.
-- **Adapter:** Converte interfaces sem atuar como intermediário.
+## Padrões relacionados:
+- Decorator: Embora similar ao Proxy, o Decorator adiciona funcionalidades sem restringir acesso.
+- Adapter: Converte interfaces sem atuar como intermediário.
 
-**Referências**
+## Referências
 GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. 1. ed. Porto Alegre: Bookman, 2000.
 
