@@ -11,7 +11,6 @@ Imagine que um sistema de armazenamento em nuvem precisa fornecer acesso a arqui
 
 Sem o Proxy, cada vez que um cliente solicita um arquivo, a operação pode ser cara e demorada. O Proxy pode intermediar essas solicitações, verificando permissões, armazenando arquivos acessados recentemente e otimizando chamadas.
 
-![alt text](image.png)
 ## Solução com Proxy:
 O padrão Proxy resolve o problema ao intermediar o acesso ao objeto real, permitindo controle sobre sua criação, acesso e manipulação. Assim:
 
