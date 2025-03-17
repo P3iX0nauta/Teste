@@ -1,145 +1,174 @@
-# Proxy
+
+# Composite
 
 ## Intenção
-Fornecer um substituto ou intermediário para controlar o acesso a um objeto. O Proxy atua como um representante do objeto real, permitindo adicionar lógica adicional antes ou depois das chamadas ao objeto original, como controle de acesso, carregamento sob demanda ou cache.
+Compor objetos em estruturas de árvore para representar hierarquias parte-todo. O padrão Composite permite que clientes tratem objetos individuais e composições de objetos de maneira uniforme.
 
 ## Também conhecido como
-Surrogate
+Parte-todo (Part-Whole)
 
 ## Motivação
-Imagine que um sistema de armazenamento em nuvem precisa fornecer acesso a arquivos grandes. Se cada solicitação acessasse diretamente os arquivos na nuvem, poderia haver um alto custo em desempenho e tempo de resposta. Para otimizar esse acesso, podemos usar o padrão Proxy para carregar os arquivos sob demanda e armazená-los temporariamente.
+Imagine que você está desenvolvendo o sistema de um restaurante, e o cliente pediu um **cardápio digital** para exibir aos clientes.
 
-Sem o Proxy, cada vez que um cliente solicita um arquivo, a operação pode ser cara e demorada. O Proxy pode intermediar essas solicitações, verificando permissões, armazenando arquivos acessados recentemente e otimizando chamadas.
+### Situação inicial:
+No início, o cardápio é simples, contendo apenas **itens individuais**, como "Hambúrguer", "Refrigerante", "Sorvete".  
+A estrutura era direta: uma lista simples de itens.
 
-## Solução com Proxy:
-O padrão Proxy resolve o problema ao intermediar o acesso ao objeto real, permitindo controle sobre sua criação, acesso e manipulação. Assim:
+Porém, com o tempo, o restaurante começou a crescer, e o dono pediu:
+- Categorias no cardápio, como *Bebidas* e *Sobremesas*.
+- Subcategorias, como *Sucos Naturais* dentro de *Bebidas*.
+  
+Agora você tem uma **estrutura hierárquica**, com menus dentro de menus, além dos itens individuais.  
+O código sem Composite começou a ficar complicado, pois o cliente (código que usa o cardápio) precisava saber se estava lidando com um item ou um menu, usando condicionais (`if` / `else`).
 
-- Podemos adiar a criação do objeto real até que seja realmente necessário.
-- Podemos adicionar um cache ou verificação de permissões antes de permitir o acesso ao objeto real.
-- Podemos limitar o acesso ao objeto real baseado em regras de negócio.
+### Exemplo da hierarquia desejada:
+```
+Menu Principal
+├── Hambúrguer - R$ 15.00
+├── Refrigerante - R$ 5.00
+└── Sobremesas
+    ├── Sorvete - R$ 8.00
+    └── Bolo de Chocolate - R$ 10.00
+```
 
-## Use o padrão Proxy quando:
+## Solução com Composite:
+O padrão Composite resolve o problema ao permitir que **menus compostos** e **itens simples** sejam tratados da mesma maneira.  
+Assim:
+- Podemos adicionar menus e submenus recursivamente.
+- O cliente não precisa se preocupar em diferenciar itens de menus.
+- A manipulação da estrutura do cardápio fica simples, flexível e extensível.
 
-- Desejar controlar o acesso a um objeto real, por exemplo, restringindo, monitorando ou adiando sua inicialização.
-- Precisar adicionar funcionalidades como logging, caching ou autenticação antes de permitir a interação com o objeto real.
-- O acesso ao objeto real for muito dispendioso em termos de recursos e desempenho.
+## Use o padrão Composite quando:
+
+- Deseja representar **estruturas hierárquicas** (parte-todo), como menus, árvores de diretórios, organizações empresariais, etc.
+- Precisa **tratar objetos simples e compostos de maneira uniforme**.
+- Quer evitar a complexidade de múltiplas verificações de tipos (`if` / `else`), facilitando a manutenção e a extensão do código.
 
 ## Estrutura
-![alt text](image.png)
+
+### Antes do Composite
+```mermaid
+classDiagram
+    class ItemMenu {
+        -nome: String
+        -preco: double
+        +exibir(): void
+    }
+
+    class Menu {
+        -nome: String
+        -itens: List~ItemMenu~
+        -subMenus: List~Menu~
+        +adicionarItem(item: ItemMenu): void
+        +adicionarSubMenu(menu: Menu): void
+        +exibir(): void
+    }
+
+    Menu "1" o-- "*" ItemMenu : contém
+    Menu "1" o-- "*" Menu : contém
+```
+
+### Depois com Composite
+```mermaid
+classDiagram
+    class ComponenteCardapio {
+        +adicionar(componente: ComponenteCardapio): void
+        +remover(componente: ComponenteCardapio): void
+        +pegarFilho(indice: int): ComponenteCardapio
+        +getNome(): String
+        +getPreco(): double
+        +exibir(): void
+    }
+
+    class ItemCardapio {
+        -nome: String
+        -preco: double
+        +getNome(): String
+        +getPreco(): double
+        +exibir(): void
+    }
+
+    class MenuCardapio {
+        -nome: String
+        -componentes: List~ComponenteCardapio~
+        +adicionar(componente: ComponenteCardapio): void
+        +remover(componente: ComponenteCardapio): void
+        +exibir(): void
+    }
+
+    ComponenteCardapio <|-- ItemCardapio
+    ComponenteCardapio <|-- MenuCardapio
+    MenuCardapio "1" o-- "*" ComponenteCardapio : contém
+```
 
 ## Participantes:
-- Subject (Arquivo): Define a interface comum para RealSubject e Proxy.
-- RealSubject (ArquivoReal): Implementa o comportamento real.
-- Proxy (ProxyArquivo): Controla o acesso a RealSubject, podendo armazenar referências e gerenciar chamadas.
+- **ComponenteCardapio (Componente abstrato):** Define a interface comum para os objetos simples (folhas) e compostos.
+- **ItemCardapio (Folha):** Representa os itens simples do cardápio (exemplo: Hambúrguer, Refrigerante).
+- **MenuCardapio (Composite):** Representa menus que podem conter outros menus e itens.
 
 ## Colaborações:
-- O Proxy gerencia o acesso ao RealSubject, podendo delegar chamadas ou adicionar funcionalidade extra.
+- O **MenuCardapio** gerencia seus componentes, podendo conter outros menus ou itens.  
+- O cliente usa a interface **ComponenteCardapio** sem se preocupar com a implementação concreta (item ou menu).
 
 ## Consequências:
-- Controle sobre a criação do objeto: O objeto real só é instanciado quando necessário.
-- Melhoria no desempenho: Pode reduzir chamadas a recursos dispendiosos (ex: carregamento de arquivos remotos).
-- Segurança e acesso controlado: Pode restringir acesso com autenticação e permissões.
+- **Facilidade de uso:** O cliente trata menus e itens de forma uniforme.
+- **Flexibilidade:** É possível adicionar submenus ilimitadamente.
+- **Manutenção facilitada:** Não há necessidade de código específico para lidar com menus ou itens separadamente.
+- **Expansão sem dor:** Novos tipos de componentes podem ser adicionados sem impactar o cliente.
 
 ## Implementação:
 
-- Proxy Virtual: Utilizado para adiar a criação do objeto real.
-- Proxy Remoto: Representa um objeto em outra localização, como um serviço remoto.
-- Proxy de Proteção: Controla acesso baseado em permissões.
-- Proxy Cache: Armazena dados para evitar recomputações desnecessárias.
-
-## Exemplo:
-
-Classe Arquivo - Subject:
+### Antes (Sem Composite)
 ```java
-package proxy;
+Menu menuPrincipal = new Menu("Menu Principal");
 
-public interface Arquivo {
-    void carregar();
-    void exibir();
-}
+ItemMenu item1 = new ItemMenu("Hambúrguer", 15.00);
+ItemMenu item2 = new ItemMenu("Refrigerante", 5.00);
+
+Menu sobremesas = new Menu("Sobremesas");
+ItemMenu item3 = new ItemMenu("Sorvete", 8.00);
+
+sobremesas.adicionarItem(item3);
+
+menuPrincipal.adicionarItem(item1);
+menuPrincipal.adicionarItem(item2);
+menuPrincipal.adicionarSubMenu(sobremesas);
+
+menuPrincipal.exibir();
 ```
 
-Classe ArquivoReal - RealSubject:
+### Depois (Com Composite)
 ```java
-package proxy;
+ComponenteCardapio menuPrincipal = new MenuCardapio("Menu Principal");
 
-public class ArquivoReal implements Arquivo {
-    private String nome;
+ComponenteCardapio item1 = new ItemCardapio("Hambúrguer", 15.00);
+ComponenteCardapio item2 = new ItemCardapio("Refrigerante", 5.00);
 
-    public ArquivoReal(String nome) {
-        this.nome = nome;
-        carregar();
-    }
+ComponenteCardapio sobremesas = new MenuCardapio("Sobremesas");
+sobremesas.adicionar(new ItemCardapio("Sorvete", 8.00));
+sobremesas.adicionar(new ItemCardapio("Bolo de Chocolate", 10.00));
 
-    @Override
-    public void carregar() {
-        System.out.println("Carregando arquivo: " + nome);
-    }
+menuPrincipal.adicionar(item1);
+menuPrincipal.adicionar(item2);
+menuPrincipal.adicionar(sobremesas);
 
-    @Override
-    public void exibir() {
-        System.out.println("Exibindo arquivo: " + nome);
-    }
-}
-```
-
-Classe ProxyArquivo - Proxy:
-```java
-package proxy;
-
-public class ProxyArquivo implements Arquivo {
-    private ArquivoReal arquivoReal;
-    private String nome;
-
-    public ProxyArquivo(String nome) {
-        this.nome = nome;
-    }
-
-    @Override
-    public void carregar() {
-        if (arquivoReal == null) {
-            arquivoReal = new ArquivoReal(nome);
-        }
-    }
-
-    @Override
-    public void exibir() {
-        carregar();
-        arquivoReal.exibir();
-    }
-}
-```
-
-Classe Main - Cliente:
-```java
-package proxy;
-
-public class Main {
-    public static void main(String[] args) {
-        Arquivo arquivo = new ProxyArquivo("documento.pdf");
-        arquivo.exibir(); // Carrega e exibe
-        System.out.println("---");
-        arquivo.exibir(); // Apenas exibe, sem carregar novamente
-    }
-}
+menuPrincipal.exibir();
 ```
 
 ## Conclusão
-O padrão Proxy é útil para controlar o acesso a objetos reais, permitindo otimizações como carregamento sob demanda, caching, autenticação e restrição de acesso. No exemplo apresentado, o Proxy adia a criação de um arquivo até que ele seja realmente necessário, evitando desperdício de recursos.
+O padrão Composite é essencial para **estruturas hierárquicas**, permitindo que objetos simples e compostos sejam tratados uniformemente.  
+No cenário do restaurante, ele facilitou a gestão de **menus e itens**, tornando o sistema mais **flexível**, **escalável** e **fácil de manter**.  
+Agora, não importa se é um item ou um submenu, o cliente só chama o método `exibir()` e o padrão faz o trabalho pesado.
 
 ## Usos conhecidos:
-**Serviços remotos:** Representa objetos remotos em aplicações distribuídas.
-
-**Autenticação e segurança:** Restringe acesso a objetos sensíveis.
-Cache de imagens e arquivos: Evita carregamento repetitivo de recursos.
-
-**Controle de acesso a sistemas complexos:** Garante que apenas usuários autorizados interajam com determinados objetos.
+- **Sistemas de arquivos**: onde diretórios contêm arquivos e outros diretórios.
+- **Organogramas de empresas**: onde departamentos contêm funcionários ou outros departamentos.
+- **Menus em aplicações gráficas**: com submenus aninhados e itens de menu.
 
 ## Padrões relacionados:
-**- Decorator:** Embora similar ao Proxy, o Decorator adiciona funcionalidades sem restringir acesso.
-
-**- Adapter:** Converte interfaces sem atuar como intermediário.
+- **Decorator:** Adiciona responsabilidades a objetos dinamicamente, mas não representa hierarquias.
+- **Composite + Iterator:** Juntos permitem navegar por uma estrutura composta de maneira uniforme.
+- **Flyweight:** Compartilha objetos similares para economia de memória, pode ser usado junto ao Composite em estruturas muito grandes.
 
 ## Referências
 GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. 1. ed. Porto Alegre: Bookman, 2000.
-
