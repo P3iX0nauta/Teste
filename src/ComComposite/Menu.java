@@ -1,13 +1,14 @@
 package ComComposite;
-// Composite: Menu que pode ter MenuItems ou outros Menus
+
 import java.util.ArrayList;
 import java.util.List;
+
 class Menu extends MenuComponent {
     private List<MenuComponent> components = new ArrayList<>();
-    private String name;
+    private String nome;
 
-    public Menu(String name) {
-        this.name = name;
+    public Menu(String nome) {
+        this.nome = nome;
     }
 
     @Override
@@ -16,7 +17,7 @@ class Menu extends MenuComponent {
     }
 
     @Override
-    public void remove(MenuComponent menuComponent) {
+    public void remover(MenuComponent menuComponent) {
         components.remove(menuComponent);
     }
 
@@ -26,13 +27,13 @@ class Menu extends MenuComponent {
     }
 
     @Override
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
     @Override
     public void display() {
-        System.out.println("Menu: " + getName());
+        System.out.println("Menu: " + getNome());
         for (MenuComponent component : components) {
             component.display();
         }

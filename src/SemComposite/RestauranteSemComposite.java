@@ -1,23 +1,34 @@
 public class RestauranteSemComposite {
     public static void main(String[] args) {
-        // Criando o menu principal
+
         Menu menuPrincipal = new Menu("Menu Principal");
 
-        // Criando itens simples
-        ItemMenu item1 = new ItemMenu("Hambúrguer", 15.00);
+        ItemMenu item1 = new ItemMenu("Hamburguer", 15.00);
         ItemMenu item2 = new ItemMenu("Refrigerante", 5.00);
+        ItemMenu item3 = new ItemMenu("Cheeseburger", 17.00);
+        ItemMenu item4 = new ItemMenu("Hot Dog", 12.00);
+        ItemMenu item5 = new ItemMenu("Batata Frita", 10.00);
+        ItemMenu item6 = new ItemMenu("Suco Natural", 7.00);
 
-        // Criando um submenu de sobremesas
         Menu sobremesas = new Menu("Sobremesas");
-        ItemMenu item3 = new ItemMenu("Sorvete", 8.00);
-        sobremesas.adicionarItem(item3);
+        ItemMenu item7 = new ItemMenu("Sorvete", 8.00);
+        ItemMenu item8 = new ItemMenu("Bolo de Chocolate", 10.00);
+        ItemMenu item9 = new ItemMenu("Pudim", 6.00);
+        ItemMenu item10 = new ItemMenu("Torta de Limao", 9.00);
 
-        // Montando a estrutura do menu
+        sobremesas.adicionarItem(item7);
+        sobremesas.adicionarItem(item8);
+        sobremesas.adicionarItem(item9);
+        sobremesas.adicionarItem(item10);
+
         menuPrincipal.adicionarItem(item1);
         menuPrincipal.adicionarItem(item2);
+        menuPrincipal.adicionarItem(item3);
+        menuPrincipal.adicionarItem(item4);
+        menuPrincipal.adicionarItem(item5);
+        menuPrincipal.adicionarItem(item6);
         menuPrincipal.adicionarSubMenu(sobremesas);
 
-        // Exibindo todo o menu
         menuPrincipal.exibir();
     }
 }

@@ -1,4 +1,4 @@
-// Representa um item simples do cardápio
+
 class ItemMenu {
     private String nome;
     private double preco;

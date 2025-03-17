@@ -1,4 +1,3 @@
-
 # Composite
 
 ## Intenção
@@ -15,20 +14,31 @@ No início, o cardápio é simples, contendo apenas **itens individuais**, como 
 A estrutura era direta: uma lista simples de itens.
 
 Porém, com o tempo, o restaurante começou a crescer, e o dono pediu:
-- Categorias no cardápio, como *Bebidas* e *Sobremesas*.
+- Categorias no cardápio, como *Lanches*, *Bebidas*, *Entradas* e *Sobremesas*.
 - Subcategorias, como *Sucos Naturais* dentro de *Bebidas*.
   
 Agora você tem uma **estrutura hierárquica**, com menus dentro de menus, além dos itens individuais.  
-O código sem Composite começou a ficar complicado, pois o cliente (código que usa o cardápio) precisava saber se estava lidando com um item ou um menu, usando condicionais (`if` / `else`).
+O código sem Composite começou a ficar complicado, pois o cliente (código que usa o cardápio) precisava saber se estava lidando com um item ou um menu, usando condicionais (if / else).
 
-### Exemplo da hierarquia desejada:
+### Exemplo da hierarquia:
 ```
 Menu Principal
-├── Hambúrguer - R$ 15.00
-├── Refrigerante - R$ 5.00
+├── Lanches
+│   ├── Hambúrguer - R$ 15.00
+│   ├── Cheeseburger - R$ 17.00
+│   ├── Hot Dog - R$ 12.00
+├── Bebidas
+│   ├── Refrigerante - R$ 5.00
+│   ├── Suco Natural - R$ 7.00
+├── Entradas
+│   ├── Batata Frita - R$ 10.00
+│   ├── Onion Rings - R$ 9.00
+│   ├── Nachos - R$ 11.00
 └── Sobremesas
     ├── Sorvete - R$ 8.00
-    └── Bolo de Chocolate - R$ 10.00
+    ├── Bolo de Chocolate - R$ 10.00
+    ├── Pudim - R$ 6.00
+    ├── Torta de Limão - R$ 9.00
 ```
 
 ## Solução com Composite:
@@ -37,12 +47,6 @@ Assim:
 - Podemos adicionar menus e submenus recursivamente.
 - O cliente não precisa se preocupar em diferenciar itens de menus.
 - A manipulação da estrutura do cardápio fica simples, flexível e extensível.
-
-## Use o padrão Composite quando:
-
-- Deseja representar **estruturas hierárquicas** (parte-todo), como menus, árvores de diretórios, organizações empresariais, etc.
-- Precisa **tratar objetos simples e compostos de maneira uniforme**.
-- Quer evitar a complexidade de múltiplas verificações de tipos (`if` / `else`), facilitando a manutenção e a extensão do código.
 
 ## Estrutura
 
@@ -101,64 +105,52 @@ classDiagram
     MenuCardapio "1" o-- "*" ComponenteCardapio : contém
 ```
 
-## Participantes:
-- **ComponenteCardapio (Componente abstrato):** Define a interface comum para os objetos simples (folhas) e compostos.
-- **ItemCardapio (Folha):** Representa os itens simples do cardápio (exemplo: Hambúrguer, Refrigerante).
-- **MenuCardapio (Composite):** Representa menus que podem conter outros menus e itens.
-
-## Colaborações:
-- O **MenuCardapio** gerencia seus componentes, podendo conter outros menus ou itens.  
-- O cliente usa a interface **ComponenteCardapio** sem se preocupar com a implementação concreta (item ou menu).
-
-## Consequências:
-- **Facilidade de uso:** O cliente trata menus e itens de forma uniforme.
-- **Flexibilidade:** É possível adicionar submenus ilimitadamente.
-- **Manutenção facilitada:** Não há necessidade de código específico para lidar com menus ou itens separadamente.
-- **Expansão sem dor:** Novos tipos de componentes podem ser adicionados sem impactar o cliente.
-
 ## Implementação:
 
-### Antes (Sem Composite)
+### Código com Composite
 ```java
-Menu menuPrincipal = new Menu("Menu Principal");
+package ComComposite;
 
-ItemMenu item1 = new ItemMenu("Hambúrguer", 15.00);
-ItemMenu item2 = new ItemMenu("Refrigerante", 5.00);
+public class RestauranteComComposite {
 
-Menu sobremesas = new Menu("Sobremesas");
-ItemMenu item3 = new ItemMenu("Sorvete", 8.00);
+    public static void main(String[] args) {
 
-sobremesas.adicionarItem(item3);
+        MenuComponent menuPrincipal = new Menu("Menu Principal");
 
-menuPrincipal.adicionarItem(item1);
-menuPrincipal.adicionarItem(item2);
-menuPrincipal.adicionarSubMenu(sobremesas);
+        MenuComponent lanches = new Menu("Lanches");
+        lanches.add(new MenuItem("Hambúrguer", 15.00));
+        lanches.add(new MenuItem("Cheeseburger", 17.00));
+        lanches.add(new MenuItem("Hot Dog", 12.00));
+        menuPrincipal.add(lanches);
 
-menuPrincipal.exibir();
-```
+        MenuComponent bebidas = new Menu("Bebidas");
+        bebidas.add(new MenuItem("Refrigerante", 5.00));
+        bebidas.add(new MenuItem("Suco Natural", 7.00));
+        menuPrincipal.add(bebidas);
 
-### Depois (Com Composite)
-```java
-ComponenteCardapio menuPrincipal = new MenuCardapio("Menu Principal");
+        MenuComponent entradas = new Menu("Entradas");
+        entradas.add(new MenuItem("Batata Frita", 10.00));
+        entradas.add(new MenuItem("Onion Rings", 9.00));
+        entradas.add(new MenuItem("Nachos", 11.00));
+        menuPrincipal.add(entradas);
 
-ComponenteCardapio item1 = new ItemCardapio("Hambúrguer", 15.00);
-ComponenteCardapio item2 = new ItemCardapio("Refrigerante", 5.00);
+        
+        MenuComponent sobremesas = new Menu("Sobremesas");
+        sobremesas.add(new MenuItem("Sorvete", 8.00));
+        sobremesas.add(new MenuItem("Bolo de Chocolate", 10.00));
+        sobremesas.add(new MenuItem("Pudim", 6.00));
+        sobremesas.add(new MenuItem("Torta de Limão", 9.00));
+        menuPrincipal.add(sobremesas);
 
-ComponenteCardapio sobremesas = new MenuCardapio("Sobremesas");
-sobremesas.adicionar(new ItemCardapio("Sorvete", 8.00));
-sobremesas.adicionar(new ItemCardapio("Bolo de Chocolate", 10.00));
-
-menuPrincipal.adicionar(item1);
-menuPrincipal.adicionar(item2);
-menuPrincipal.adicionar(sobremesas);
-
-menuPrincipal.exibir();
+        menuPrincipal.display();
+    }
+}
 ```
 
 ## Conclusão
 O padrão Composite é essencial para **estruturas hierárquicas**, permitindo que objetos simples e compostos sejam tratados uniformemente.  
 No cenário do restaurante, ele facilitou a gestão de **menus e itens**, tornando o sistema mais **flexível**, **escalável** e **fácil de manter**.  
-Agora, não importa se é um item ou um submenu, o cliente só chama o método `exibir()` e o padrão faz o trabalho pesado.
+Agora, não importa se é um item ou um submenu, o cliente só chama o método display() e o padrão faz o trabalho pesado.
 
 ## Usos conhecidos:
 - **Sistemas de arquivos**: onde diretórios contêm arquivos e outros diretórios.
@@ -172,3 +164,4 @@ Agora, não importa se é um item ou um submenu, o cliente só chama o método `
 
 ## Referências
 GAMMA, Erich; HELM, Richard; JOHNSON, Ralph; VLISSIDES, John. Padrões de projeto: soluções reutilizáveis de software orientado a objetos. 1. ed. Porto Alegre: Bookman, 2000.
+

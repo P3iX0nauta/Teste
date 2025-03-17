@@ -1,27 +1,26 @@
 package ComComposite;
 
-// Folha: Item de menu
 class MenuItem extends MenuComponent {
-    private String name;
-    private double price;
+    private String nome;
+    private double preco;
 
-    public MenuItem(String name, double price) {
-        this.name = name;
-        this.price = price;
+    public MenuItem(String nome, double preco) {
+        this.nome = nome;
+        this.preco = preco;
     }
 
     @Override
-    public String getName() {
-        return name;
+    public String getNome() {
+        return nome;
     }
 
     @Override
-    public double getPrice() {
-        return price;
+    public double getPreco() {
+        return preco;
     }
 
     @Override
     public void display() {
-        System.out.println("Item: " + getName() + ", Preço: " + getPrice());
+        System.out.println("Item: " + getNome() + ", Preco: " + getPreco());
     }
 }

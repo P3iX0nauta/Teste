@@ -1,12 +1,12 @@
 package ComComposite;
 
-// Componente: Interface comum
+
 abstract class MenuComponent {
     public void add(MenuComponent menuComponent) {
         throw new UnsupportedOperationException();
     }
 
-    public void remove(MenuComponent menuComponent) {
+    public void remover(MenuComponent menuComponent) {
         throw new UnsupportedOperationException();
     }
 
@@ -14,11 +14,11 @@ abstract class MenuComponent {
         throw new UnsupportedOperationException();
     }
 
-    public String getName() {
+    public String getNome() {
         throw new UnsupportedOperationException();
     }
 
-    public double getPrice() {
+    public double getPreco() {
         throw new UnsupportedOperationException();
     }
 
